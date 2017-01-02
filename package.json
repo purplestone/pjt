@@ -1,0 +1,28 @@
+{
+  "name": "XXX_pjt_fe",
+  "version": "0.0.1",
+  "author": "stonepurple",
+  "description": "fe env code",
+  "dependencies": {
+    "cb2p": "^1.1.0",
+    "co": "^4.6.0",
+    "colors": "^1.1.2",
+    "debug": "^2.2.0",
+    "express": "^4.14.0",
+    "gulp": "^3.9.1",
+    "gulp-less": "^3.1.0",
+    "gulp-sourcemaps": "^1.6.0",
+    "iconv-lite": "^0.4.13",
+    "nunjucks": "^2.4.2",
+    "serve-static": "^1.11.1",
+    "through2": "^2.0.1"
+  },
+  "devDependencies": {
+    "gulp-util": "^3.0.7"
+  },
+  "scripts": {
+    "server": "node loc_server.js",
+    "watch": "gulp watch",
+    "build": "gulp"
+  }
+}

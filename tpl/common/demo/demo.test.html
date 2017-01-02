@@ -1,0 +1,32 @@
+{% extends 'base/test.base.tpl' %}
+
+
+ {%block content%}
+
+	<script type="text/javascript">
+	//<!--
+		//assert.equal(value,
+			//expect,
+			//'value——expect'
+		//);
+		//assert.deepEqual(value,[
+			
+		//], 'value——expect');
+		seajs.use("pjt/developer/page/demo/demo", function($$m) {
+
+			QUnit.test( "test case name", function( assert ) {
+				assert.equal('value',
+					'expect',
+					'value-expect'
+				);
+			});
+
+
+		});
+	//-->
+	</script>
+
+ {%endblock%}
+
+
+
