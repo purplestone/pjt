@@ -1,4 +1,4 @@
-{% extends 'common/base.tpl' %}
+{% extends 'base/base.tpl' %}
 
 {%block css%}
 	{{ cssLink([

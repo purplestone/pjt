@@ -25,7 +25,7 @@
 {% endmacro %}
  {%block css_global%}
 	{{ cssLink([
-		'/lib/qunit/1_14_0.css'
+		'/lib/qunit/qunit-2.0.1.css'
 	]) }}
 {%endblock%}
 {% macro jsLink(list=[], resPath=c.resPath, resVer=resVer) %}
@@ -42,6 +42,7 @@
  {%endblock%}
  {%block js_global%}
 	{{jsLink([
+		'/lib/qunit/qunit-2.0.1.js',
 		'/lib/requirejs/2.3.2.js'
 	])}}
  {%endblock%}

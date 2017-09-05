@@ -5,7 +5,7 @@
 .package
 .log
 *.map
-node_modules
+node_modules/*
 src/envConf.njs
 temp/
 logs/

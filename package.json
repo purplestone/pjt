@@ -21,7 +21,7 @@
     "gulp-util": "^3.0.7"
   },
   "scripts": {
-    "server": "node loc_server.js",
+    "server": "node server.js",
     "watch": "gulp watch",
     "build": "gulp"
   }

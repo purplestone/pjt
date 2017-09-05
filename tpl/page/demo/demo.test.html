@@ -12,7 +12,7 @@
 		//assert.deepEqual(value,[
 			
 		//], 'value——expect');
-		seajs.use("demo/demo", function($$m) {
+		requirejs(["page/demo/demo"], function($$m) {
 
 			QUnit.test( "test case name", function( assert ) {
 				assert.equal('value',

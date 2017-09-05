@@ -1,5 +1,4 @@
 var $$express = require('express')
-	, $$nunjucks = require('nunjucks')
 	, $$colors = require('colors')
 	, $$path = require('path')
 	, $$fs = require('fs')
