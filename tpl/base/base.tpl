@@ -12,7 +12,7 @@
 	<meta http-equiv="X-UA-Compatible" content="IE=edge">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
  {%endblock%}
-{% set resVer = '0.0.1' %}
+{% set resVer = c.ver%}
  {%block ico%}
 	<link href="/favicon.ico" rel="shortcut icon"  type="image/x-icon" />
 	<link href="/favicon.ico" rel="icon"  />
@@ -24,11 +24,20 @@
  {% endfor %}
 {% endmacro %}
  {%block css_global%}
-	 <!-- Latest compiled and minified CSS -->
+	 <!-- Latest compiled and minified 
 	<link rel="stylesheet" href="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
-	<!-- Optional theme -->
 	<link rel="stylesheet" href="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap-theme.min.css" integrity="sha384-rHyoN1iRsVXV4nD0JutlnGaslCJuC7uwjduW9SVrLvRYooPp2bWYgmgJQIXwl/Sp" crossorigin="anonymous">
+	CSS 
+		'/lib/bootsrap/Theme/dashgumfree_v2/assets/css/bootstrap.css',
+		'/lib/bootsrap/Theme/dashgumfree_v2/assets/font-awesome/css/font-awesome.css',
+		'/lib/bootsrap/Theme/dashgumfree_v2/assets/css/style.css',
+		'/lib/bootsrap/Theme/dashgumfree_v2/assets/css/style-responsive.css',
+-->
+
 	{{ cssLink([
+		'/lib/bootsrap/Theme/paper/bootstrap.css',
+
+		'/common/common.css'
 	]) }}
  {%endblock%}
 {% macro jsLink(list=[], resPath=c.resPath, resVer=resVer) %}
@@ -45,6 +54,9 @@
  {%endblock%}
  {%block js_global%}
 	{{jsLink([
+		'/kit/var_dump.js',
+		'/lib/jquery/jquery-3.1.1.min.js',
+		'/lib/bootsrap/js/bootstrap.js',
 		'/lib/requirejs/2.3.2.js'
 	])}}
  {%endblock%}

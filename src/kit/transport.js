@@ -39,7 +39,7 @@
 	var _pub_static = function (oApi, oSpec) {var _pri = {}, _pub = function(){return {buildDoneFun:function (oArgs) {return _pub_static.buildDoneFun(oArgs, oSpec)}};};
 		var _main = function () {
 			oSpec = oSpec || {};
-			oSpec.dailog = oSpec.dailog || {
+			oSpec.dialog = oSpec.dialog || {
 				alert : function (s) {
 					alert(s);
 				}
@@ -59,9 +59,9 @@
 
 	_pri_static["fnBad"] = function (oData, oSpec, oTransport, oCustomTips) {
 		//alert([oData.status, oData.request_id, oData.msg].join(', '));
-		//oSpec.dailog.alert(oData.msg + '\n(' + oData.status + ', ' + oData.request_id + ')' );
-		var s = _pub_static.codeTips(oData, oTransport, oCustomTips);
-		oSpec.dailog.alert(s);
+		//oSpec.dialog.alert(oData.msg + '\n(' + oData.status + ', ' + oData.request_id + ')' );
+		var s = _pub_static.codeTips.call(this, oData, oTransport, oCustomTips);
+		oSpec.dialog.alert(s);
 	};
 
 	_pub_static["buildDoneFun"] = function (oArgs, oSpec, oTransport, oCustomTips) {
@@ -80,31 +80,31 @@
 			}else{
 				fnDoError(o, oSpec, oTransport, oCustomTips);
 			}
-			//oArgs.end && oArgs.end.apply(this, arguments);
-
 		};
 	};
 
 
 	_pub_static["build"] = function (oTransport, oSpec) {
 
-		var oAjaxConfDef;
-		switch(oTransport.type) {
+		var oAjaxConfDef = {
+			type: oTransport.type.toLowerCase()
+		};
+		
+		switch(oAjaxConfDef.type) {
 			case 'get':
 			case 'post':
-				oAjaxConfDef = {
-					type : oTransport.type,
+			case 'postjson':
+				oAjaxConfDef = $.extend(oAjaxConfDef, {
 					dataType : 'json'
-				};
+				});
 				break;
 			case 'jsonp':
 				return function (oArgs) {
-					oAjaxConfDef = {
-						type : 'jsonp',
+					oAjaxConfDef = $.extend(oAjaxConfDef, {
 						crossDomain : true,
 						dataType : 'jsonp',
 						jsonpCallback : oArgs.jsonpCallback
-					};
+					});
 				};
 				break;
 
@@ -113,17 +113,32 @@
 		var send = function (oArgs) {
 			oArgs = oArgs || {};
 			var iRetryNum = 0;
-			var oAjaxConf = $.extend(oAjaxConfDef, oArgs);
+			var oAjaxConf = Object.assign(Object.create(oAjaxConfDef), oArgs);
 			oAjaxConf["url"] = oTransport.uri;
 			oAjaxConf["data"] = oArgs.data;
 			oAjaxConf["cache"] = false;
+			if (oAjaxConf.type === 'postjson' ) {
+				oAjaxConf.type = 'post';
+				oAjaxConf.contentType = 'application/json';
+				oAjaxConf.data = JSON.stringify(oAjaxConf.data);
+			}
 
 			var oXHR = $.ajax(oAjaxConf);
 			oXHR
-				["done"](_pub_static.buildDoneFun(oArgs, oSpec, oTransport, oArgs.codeTips))
-				["fail"](oArgs.fail)
-				["always"](oArgs.always)
+				["done"](function () {
+					oArgs.loadHandler && oArgs.loadHandler.loaded &&oArgs.loadHandler.loaded(); 
+					_pub_static.buildDoneFun(oArgs, oSpec, oTransport, oArgs.codeTips).apply(oXHR, arguments);
+				})
+				["fail"](function () {
+					oArgs.loadHandler && oArgs.loadHandler.loaded &&oArgs.loadHandler.loaded(); 
+					_pri_static.fnBad.call(oXHR, oArgs, oSpec, oTransport, oArgs.codeTips);
+				})
+				["always"](function () {
+					oArgs.end && oArgs.end.apply(this, arguments);
+				})
 			;
+
+			oArgs.loadHandler && oArgs.loadHandler.loading &&oArgs.loadHandler.loading();
 			return oXHR;
 		};
 
@@ -142,7 +157,7 @@
 			sTips = oTransport && oTransport.codeTips && oTransport.codeTips[oData.code];
 		}
 		if(!sTips) {
-			sTips = oData.msg || '发生异常错误。';
+			sTips = oData.msg || '请求解析发生异常错误。('+ this.status + ')';
 		}
 		return sTips;
 	};

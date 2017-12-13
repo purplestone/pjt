@@ -21,14 +21,15 @@ module.exports = (function () {
 
 			var oUrlHash =  _pri.oUrlHash = $$urlHash(_pri.req);
 			var sPath = oUrlHash.path || _pri.req.path;
+			_pri.req.app.conf = $$envConf;
 
-			if(['js', 'css', 'jpg', 'png', 'gif', 'map', 'ico', 'eot', 'svg', 'ttf', 'woff', 'woff2'].some(function (s) {
+			if(['json', 'js', 'css', 'jpg', 'png', 'gif', 'map', 'ico', 'eot', 'svg', 'ttf', 'woff', 'woff2'].some(function (s) {
 				return $$path.extname(sPath) === '.'+s;
 			})) {
-				if(req.hostname === '127.0.0.1') {
+				if(0&&req.hostname === '127.0.0.1') {
 					res.status(400).send('Please don\'t visit host:127.0.0.1 to dev res.(you can visit "localhost" or other domain) Bad Request: ' + sPath);
 				}
-				if(['eot', 'svg', 'ttf', 'woff', 'woff2'].some(function (s) {
+				if(['json', 'eot', 'svg', 'ttf', 'woff', 'woff2'].some(function (s) {
 					return $$path.extname(sPath) === '.'+s;
 				})) {
 					res.set({
@@ -164,11 +165,11 @@ module.exports = (function () {
 				}
 				//console.log(oTplData);
 
-
-				if(sTplPath && !_pri.req.param._dump) {
+				if(sTplPath && !_pri.req.query._dump) {
 					_pri.res.render(sTplPath, oTplData);
 					console.log('load tpl : ' + sTplPath.green);
 				}else{
+					console.log('req.query._dump', _pri.req.query._dump);
 					_pri.res.end(JSON.stringify(oTplData));
 				}
 			});

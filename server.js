@@ -1,4 +1,5 @@
 var $$express = require('express')
+	, $$bodyParser = require('body-parser')
 	, $$colors = require('colors')
 	, $$path = require('path')
 	, $$fs = require('fs')
@@ -13,10 +14,13 @@ module.exports = (function () {
 		var _init = function () {
 			
 			$$envConf = require('./src/envConf.njs');
+			$$appConf = require('./src/appConf.njs');
 
 			var iPort = $$envConf.port;
 
 			var app = $$express();
+			
+			app.use($$bodyParser.json()); // for parsing application/json
 
 			//app.set('views', __dirname+'/tpl');
 			//$$nunjucksJs.bindExpress(app);
@@ -27,6 +31,68 @@ module.exports = (function () {
 			});
 
 			app.use(function (req, res, next) {
+				req.appConf = $$appConf;
+				res.api = (function () {
+					var _fun = function (oSpec) {
+						if (!_fun.res.length) {
+							res.send(JSON.stringify(oSpec));
+						}
+						_fun.res.push(oSpec);
+					};
+
+					_fun["res"] = [];
+
+					_fun["bind"] = function (iFileNum) {
+						var fn = function (oSpec) {
+							_fun(oSpec);
+						};
+						fn.ok = _fun.ok;
+						fn.err = function (msg, code, data) {
+							var args = [].slice.call(arguments, 0);
+							if (args[0] instanceof Error) {
+								if (args[0].heap) {
+									args = args[0].heap[0];
+								}else{
+									args.shift();
+								}
+							}
+							args[1] = - (iFileNum + parseFloat('0.' + args[1] + '9'));
+							_fun.err.apply(null, args);
+						};
+						fn.Error = function () {
+							var args = [].slice.call(arguments, 0);
+							var err;
+							if (args[0] instanceof Error) {
+								err = args[0];
+								args.shift();
+							}else{
+								err = new Error();
+							}
+							err.heap = err.heap || [];
+							err.heap.push(args);
+							return err;
+						};
+						return fn;
+					};
+				
+					_fun["ok"] = function (data, msg, code) {
+						_fun({
+							code: code || 0,
+							data: data || null,
+							msg: msg || '',
+						});
+					};
+
+					_fun["err"] = function (msg, code, data) {
+						_fun({
+							code: code || -1,
+							data: data || null,
+							msg: msg || '请求发生异常',
+						});
+					};
+				
+					return _fun;
+				}());
 				_pri.clearAppMd();
 				require('./src/router.njs')(req, res, next);
 			});

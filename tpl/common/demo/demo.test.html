@@ -1,5 +1,9 @@
 {% extends 'base/test.base.tpl' %}
 
+{%block css%}
+	<link href="{{c.resPath}}/common/demo/demo.css" type="text/css" rel="stylesheet" media="all" />
+{%endblock%}
+
 
  {%block content%}
 
@@ -12,9 +16,11 @@
 		//assert.deepEqual(value,[
 			
 		//], 'value——expect');
-		seajs.use("pjt/developer/page/demo/demo", function($$m) {
+		requirejs(["common/demo/demo"], function($$m) {
 
 			QUnit.test( "test case name", function( assert ) {
+
+				$$m()
 				assert.equal('value',
 					'expect',
 					'value-expect'
@@ -27,6 +33,4 @@
 	</script>
 
  {%endblock%}
-
-
 

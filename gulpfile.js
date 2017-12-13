@@ -9,7 +9,7 @@ var gulp = require('gulp')
 	, $$process = require('process')
 	//, $$multistream = require('multistream')
 	//, $$buildLess = require('buildLess')
-	, $$locServer = require('./loc_server.js')
+	, $$locServer = require('./server.js')
 ;
 $$locServer.createEnvConf();
 var $$envConf = require('./src/envConf.njs');
@@ -88,6 +88,8 @@ gulp.task("watch", function () {
 		gutil.log('File ' + evt.path.cyan + ' was ' + evt.type + ', running task : js.tpl2js...');
 	});
 
+	buildLess();
+
 	$$process.title = $$envConf.urlPrefix + ' watch';
 });
 
@@ -113,6 +115,7 @@ function buildLess() {
 					gutil.log('del css file, because a same name less file was exist :\n' + (cssPath+'').red+'\u0007\u0007\u0007\u0007\u0007');
 				}
 			});
+			file.contents = new Buffer(hookLessFile(file.contents.toString()));
 			cb(null, file);
 		}))
 		.pipe($$sourcemaps.init())
@@ -146,7 +149,7 @@ gulp.task("buildJsTpl", function () {
 		.pipe($$through2.obj(function (file, enc, cb) {
 			file.path = file.path.replace('.js.tpl', '.tpl.js');
 			//gutil.log('bulit tpl.js file :' + (file.path+'').file);
-			file.contents = new Buffer(tplToSeajs(file.contents.toString()));
+			file.contents = new Buffer(tplToRequirejs(file.contents.toString()));
 			cb(null, file);
 		}))
 		.pipe(gulp.dest('./build'))
@@ -190,10 +193,19 @@ gulp.task("copyToJavaTpl", function () {
 	;
 });
 
+function hookLessFile(s) {
+	return s.replace(/@import\s+('|")([^;]+?).css\1;/g, function (srt, sQ, sPath) {
+		if (sPath[0] === '/') {
+			sPath = $$envConf.urlPrefix + sPath;
+		}
 
-function tplToSeajs(s) {
+		return `@import '${sPath}.css?ver=${$$envConf.ver}';`;
+	});
+}
+
+function tplToRequirejs(s) {
 	s = [
-		';define(function(require, exports, module){',
+		';define(function(){',
 			'return [',
 				s.replace(/\r\n/g, '\n').replace(/\r/g, '\n').split('\n').map(function (sLine) {
 					sLine = sLine.replace(/^(\s*)(.+)/, function (s, sS, sC) {
